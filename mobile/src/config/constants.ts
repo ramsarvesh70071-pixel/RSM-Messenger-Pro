@@ -25,7 +25,7 @@ export const COLORS = {
 };
 
 // Production Live Cloud Backend on Render
-export const DEFAULT_HOST = 'https://rsm-messenger-pro.onrender.com';
+export const DEFAULT_HOST = 'https://rsm-messenger-server.onrender.com';
 
 export const API_BASE_URL = `${DEFAULT_HOST}/api/v1`;
 export const SOCKET_URL = DEFAULT_HOST;

@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useStore } from '../store/useStore';
@@ -85,12 +86,14 @@ export const AuthScreen: React.FC = () => {
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
-        <View style={styles.logoBadge}>
-          <Ionicons name="chatbubbles" size={46} color="#FFFFFF" />
-        </View>
-        <Text style={styles.title}>Welcome to RSM Messenger</Text>
+        <Image
+          source={require('../../assets/icon.png')}
+          style={{ width: 88, height: 88, borderRadius: 22, marginBottom: 14 }}
+          resizeMode="cover"
+        />
+        <Text style={styles.title}>RSM Messenger Pro</Text>
         <Text style={styles.subtitle}>
-          Full-Stack real-time messaging, WebRTC calling & 24h stories powered by React Native and MongoDB.
+          Ultra Secure & Premium Real-Time Messaging Platform
         </Text>
       </View>
 

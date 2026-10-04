@@ -132,23 +132,20 @@ function MainApp() {
 
   const headerBg = isDarkMode ? '#111B21' : COLORS.primary;
 
-  // Splash Screen while restoring auth
+  // Luxury Splash Screen while restoring auth
   if (isRestoringAuth) {
     return (
-      <SafeAreaView style={[styles.splashContainer, isDarkMode && styles.splashContainerDark]}>
-        <StatusBar backgroundColor={headerBg} barStyle="light-content" translucent={false} />
-        <View style={styles.splashContent}>
-          <View style={styles.splashIconBox}>
-            <Ionicons name="chatbubbles" size={72} color={COLORS.primaryLight} />
-          </View>
-          <Text style={[styles.splashTitle, isDarkMode && styles.textDark]}>RSM Messenger Pro</Text>
-          <ActivityIndicator size="small" color={COLORS.primaryLight} style={{ marginTop: 24 }} />
+      <View style={{ flex: 1, backgroundColor: '#05110E' }}>
+        <StatusBar backgroundColor="#05110E" barStyle="light-content" translucent={false} />
+        <Image
+          source={require('./assets/splash.png')}
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
+        />
+        <View style={{ position: 'absolute', bottom: 44, left: 0, right: 0, alignItems: 'center' }}>
+          <ActivityIndicator size="small" color="#D4AF37" />
         </View>
-        <View style={styles.splashFooter}>
-          <Text style={styles.splashFooterSub}>from</Text>
-          <Text style={[styles.splashFooterBrand, isDarkMode && styles.textDark]}>RSM Engineering</Text>
-        </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
