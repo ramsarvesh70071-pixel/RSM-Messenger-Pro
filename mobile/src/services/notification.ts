@@ -1,4 +1,3 @@
-import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { api } from './api';
@@ -9,9 +8,10 @@ const isExpoGo =
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient ||
   (Constants as any).appOwnership === 'expo';
 
-// Configure notification presentation when app is in foreground
+let Notifications: any = null;
 if (!isExpoGo) {
   try {
+    Notifications = require('expo-notifications');
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -22,7 +22,7 @@ if (!isExpoGo) {
       }),
     });
   } catch (e) {
-    console.warn('[NotificationService] setNotificationHandler initialization skipped:', e);
+    console.warn('[NotificationService] Failed to load expo-notifications:', e);
   }
 }
 
@@ -89,7 +89,7 @@ export class NotificationService {
     }
 
     try {
-      return Notifications.addNotificationResponseReceivedListener((response) => {
+      return Notifications.addNotificationResponseReceivedListener((response: any) => {
         const data = response?.notification?.request?.content?.data;
         if (data) {
           onNotificationTap(data);

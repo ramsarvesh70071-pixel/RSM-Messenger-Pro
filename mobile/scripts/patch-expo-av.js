@@ -47,3 +47,19 @@ if (fs.existsSync(playerPath)) {
     console.log('[patch-expo-av] Patched FullscreenVideoPlayer.java');
   }
 }
+
+// 4. Patch expo-notifications warnOfExpoGoPushUsage (SDK 53+ Expo Go crash)
+const notifFiles = [
+  path.join(__dirname, '..', 'node_modules', 'expo-notifications', 'build', 'warnOfExpoGoPushUsage.js'),
+  path.join(__dirname, '..', 'node_modules', 'expo-notifications', 'src', 'warnOfExpoGoPushUsage.ts'),
+];
+for (const notifPath of notifFiles) {
+  if (fs.existsSync(notifPath)) {
+    let content = fs.readFileSync(notifPath, 'utf8');
+    if (content.includes('throw new Error(message);')) {
+      content = content.replace('throw new Error(message);', 'console.warn(message);');
+      fs.writeFileSync(notifPath, content, 'utf8');
+      console.log(`[patch-expo-notifications] Patched ${path.basename(notifPath)}`);
+    }
+  }
+}
