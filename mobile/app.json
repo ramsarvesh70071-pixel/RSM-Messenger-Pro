@@ -1,0 +1,84 @@
+{
+  "expo": {
+    "name": "RSM Messenger",
+    "slug": "rsm-messenger",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "rsmmessenger",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#075E54"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rsmmessenger.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "RSM Messenger uses camera for photos, videos, and video calling.",
+        "NSMicrophoneUsageDescription": "RSM Messenger uses microphone for voice notes and calls.",
+        "NSPhotoLibraryUsageDescription": "RSM Messenger needs photo library access to send pictures and videos.",
+        "NSLocationWhenInUseUsageDescription": "RSM Messenger needs location to share your location with contacts.",
+        "NSContactsUsageDescription": "RSM Messenger needs contacts access to discover your friends on the platform."
+      }
+    },
+    "android": {
+      "package": "com.rsmmessenger.app",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "backgroundColor": "#075E54",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "INTERNET",
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO",
+        "READ_MEDIA_AUDIO",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "READ_CONTACTS",
+        "MODIFY_AUDIO_SETTINGS",
+        "ACCESS_NETWORK_STATE",
+        "POST_NOTIFICATIONS",
+        "VIBRATE"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-sharing",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow RSM Messenger to access your photos to send images.",
+          "cameraPermission": "Allow RSM Messenger to access your camera to take pictures."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow RSM Messenger to access your location to share with contacts."
+        }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow RSM Messenger to sync your contacts."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#00A884"
+        }
+      ]
+    ]
+  }
+}

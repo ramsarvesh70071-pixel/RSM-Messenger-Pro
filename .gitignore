@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Production builds
+dist/
+build/
+.next/
+out/
+
+# Android build outputs & binaries (GitHub rejects files > 100MB)
+*.apk
+*.aab
+*.dex
+.gradle/
+*/.gradle/
+*/android/.gradle/
+*/android/app/build/
+*/android/build/
+*/android/.cxx/
+local.properties
+*/local.properties
+
+# Expo & IDE
+.expo/
+*/.expo/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment & Secrets
+.env
+.env.local
+.env.production
+# Uploads
+uploads/
+*/uploads/
+!*/uploads/.gitkeep
+
+# Keystores & Credentials
+*.keystore
+*.jks
+*.pem
+*.key
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Temp / OS
+.DS_Store
+Thumbs.db

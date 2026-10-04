@@ -1,0 +1,21 @@
+{
+  "name": "rsm-messenger-root",
+  "version": "1.0.0",
+  "description": "RSM Messenger - Production-Quality WhatsApp-Style Real-Time Messaging Application",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,ADMIN,CLIENT\" -c \"blue,green,magenta\" \"npm run dev:server\" \"npm run dev:admin\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:admin": "cd admin && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "install:all": "npm install && cd shared && npm install && cd ../server && npm install && cd ../admin && npm install && cd ../client && npm install && cd ../mobile && npm install",
+    "build:all": "cd shared && npm run build && cd ../server && npm run build && cd ../admin && npm run build && cd ../client && npm run build",
+    "seed": "cd server && npm run seed",
+    "test": "cd server && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "author": "RSM Messenger Team",
+  "license": "MIT"
+}

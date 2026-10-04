@@ -1,0 +1,87 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  typecheck:
+    name: Typecheck All Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: |
+          npm ci
+          cd shared && npm ci && npm run build
+          cd ../server && npm ci
+          cd ../admin && npm ci
+          cd ../client && npm ci
+          cd ../mobile && npm ci
+
+      - name: Typecheck Server
+        run: cd server && npx tsc --noEmit
+
+      - name: Typecheck Client
+        run: cd client && npx tsc --noEmit
+
+      - name: Typecheck Admin
+        run: cd admin && npx tsc --noEmit
+
+      - name: Typecheck Mobile
+        run: cd mobile && npx tsc --noEmit
+
+  test-server:
+    name: Server Automated Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Server Dependencies
+        run: |
+          cd server && npm ci
+
+      - name: Run Jest Test Suite (In-Memory MongoDB)
+        run: cd server && npm test -- --coverage
+        env:
+          NODE_ENV: test
+          JWT_SECRET: dev_super_secret_jwt_access_key_min_32_characters_for_testing
+          JWT_REFRESH_SECRET: dev_super_secret_jwt_refresh_key_min_32_characters_for_testing
+          MOCK_OTP_ENABLED: true
+
+  build:
+    name: Build Server, Client & Admin Bundles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install & Build All
+        run: |
+          cd shared && npm ci && npm run build
+          cd ../server && npm ci && npm run build
+          cd ../client && npm ci && npm run build
+          cd ../admin && npm ci && npm run build

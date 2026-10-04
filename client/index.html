@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <title>RSM Messenger - Real-Time WhatsApp-Style Messaging</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#111b21" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2325D366'><path d='M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.07L2.12 21.6c-.16.48.29.93.77.77l4.53-1.26C8.88 21.72 10.39 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z'/></svg>" />
+  </head>
+  <body class="bg-[#0c1317] text-[#e9edef] antialiased select-none font-['Segoe_UI',Helvetica,Arial,sans-serif]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && !['localhost','127.0.0.1'].includes(window.location.hostname) && !/^(192\.168|10\.|172\.(1[6-9]|2\d|3[01]))/.test(window.location.hostname)) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then((r) => r.update()).catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>

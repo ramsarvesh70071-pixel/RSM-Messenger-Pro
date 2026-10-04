@@ -1,0 +1,14 @@
+{
+  "name": "@rsm/shared",
+  "version": "1.0.0",
+  "description": "Shared contracts, types, and constants for RSM Messenger",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
