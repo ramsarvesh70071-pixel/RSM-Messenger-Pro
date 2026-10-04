@@ -1,24 +1,38 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { api } from './api';
 
+// In Expo Go on Android (SDK 53+), remote push notifications were removed by Expo.
+// They are supported in standalone APKs and development builds.
+const isExpoGo =
+  Constants.executionEnvironment === ExecutionEnvironment.StoreClient ||
+  (Constants as any).appOwnership === 'expo';
+
 // Configure notification presentation when app is in foreground
-try {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-      shouldShowBanner: true,
-      shouldShowList: true,
-    }),
-  });
-} catch (e) {
-  console.warn('[NotificationService] setNotificationHandler initialization skipped:', e);
+if (!isExpoGo) {
+  try {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
+      }),
+    });
+  } catch (e) {
+    console.warn('[NotificationService] setNotificationHandler initialization skipped:', e);
+  }
 }
 
 export class NotificationService {
   static async registerForPushNotifications(): Promise<string | null> {
+    if (isExpoGo) {
+      console.log('[NotificationService] Running in Expo Go: Remote push notifications are disabled in Expo Go (SDK 53+). Working in standalone build.');
+      return null;
+    }
+
     try {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
@@ -64,12 +78,16 @@ export class NotificationService {
 
       return pushToken;
     } catch (err: any) {
-      console.warn('Could not register push token:', err.message);
+      console.warn('Could not register push token:', err?.message || err);
       return null;
     }
   }
 
   static addNotificationResponseListener(onNotificationTap: (data: Record<string, any>) => void) {
+    if (isExpoGo) {
+      return { remove: () => {} };
+    }
+
     try {
       return Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response?.notification?.request?.content?.data;
