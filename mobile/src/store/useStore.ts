@@ -334,7 +334,14 @@ export const useStore = create<AppState>((set, get) => ({
           };
         });
 
-        set({ conversations: mappedList });
+        const seen = new Set<string>();
+        const uniqueList = mappedList.filter((c) => {
+          if (!c.id || seen.has(c.id)) return false;
+          seen.add(c.id);
+          return true;
+        });
+
+        set({ conversations: uniqueList });
       }
     } catch (err) {
       console.log('Error fetching conversations:', err);
@@ -380,8 +387,15 @@ export const useStore = create<AppState>((set, get) => ({
           };
         });
 
+        const seen = new Set<string>();
+        const uniqueMessages = list.filter((m) => {
+          if (!m.id || seen.has(m.id)) return false;
+          seen.add(m.id);
+          return true;
+        });
+
         set((state) => ({
-          messages: { ...state.messages, [chatId]: list },
+          messages: { ...state.messages, [chatId]: uniqueMessages },
         }));
 
         // Mark read
@@ -700,17 +714,22 @@ export const useStore = create<AppState>((set, get) => ({
       const res = await api.getUsers(query);
       if (res?.data && Array.isArray(res.data)) {
         const currentUserId = get().currentUser?.id;
-        const filtered = res.data
-          .filter((u: any) => (u._id || u.id) !== currentUserId)
-          .map((u: any) => ({
-            id: u._id || u.id,
+        const seen = new Set<string>();
+        const filtered: User[] = [];
+        for (const u of res.data) {
+          const uid = (u._id || u.id)?.toString();
+          if (!uid || uid === currentUserId || seen.has(uid)) continue;
+          seen.add(uid);
+          filtered.push({
+            id: uid,
             name: u.name || 'User',
             phone: u.phoneNumber || '',
             avatar: u.avatarUrl,
             statusMessage: u.about || 'Available',
             isOnline: u.isOnline,
             lastSeen: u.lastSeen,
-          }));
+          });
+        }
         set({ registeredUsers: filtered });
       }
     } catch (err) {
@@ -786,19 +805,26 @@ export const useStore = create<AppState>((set, get) => ({
     try {
       const res = await api.getStatusFeed();
       if (res?.data && Array.isArray(res.data)) {
-        const mapped: Story[] = res.data.map((s: any) => ({
-          id: s._id || s.id,
-          userId: s.userId?._id || s.userId,
-          userName: s.userId?.name || 'Contact',
-          userAvatar: s.userId?.avatarUrl,
-          mediaUrl: s.mediaUrl,
-          mediaType: s.type || 'text',
-          caption: s.content || s.caption,
-          backgroundColor: s.backgroundColor || '#075E54',
-          createdAt: new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          expiresAt: s.expiresAt,
-          viewers: s.views?.map((v: any) => v.userId?.toString() || v.userId) || [],
-        }));
+        const seen = new Set<string>();
+        const mapped: Story[] = [];
+        for (const s of res.data) {
+          const sid = (s._id || s.id)?.toString();
+          if (!sid || seen.has(sid)) continue;
+          seen.add(sid);
+          mapped.push({
+            id: sid,
+            userId: s.userId?._id || s.userId,
+            userName: s.userId?.name || 'Contact',
+            userAvatar: s.userId?.avatarUrl,
+            mediaUrl: s.mediaUrl,
+            mediaType: s.type || 'text',
+            caption: s.content || s.caption,
+            backgroundColor: s.backgroundColor || '#075E54',
+            createdAt: new Date(s.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            expiresAt: s.expiresAt,
+            viewers: s.views?.map((v: any) => v.userId?.toString() || v.userId) || [],
+          });
+        }
         set({ stories: mapped });
       }
     } catch (err) {
@@ -836,25 +862,32 @@ export const useStore = create<AppState>((set, get) => ({
     try {
       const res = await api.getCallHistory();
       if (res?.data && Array.isArray(res.data)) {
-        const mappedCalls: CallSession[] = res.data.map((c: any) => ({
-          id: c._id || c.id,
-          caller: {
-            id: c.caller?._id || c.callerId?._id || c.caller || c.callerId,
-            name: c.caller?.name || c.callerId?.name || 'User',
-            phone: c.caller?.phoneNumber || c.callerId?.phoneNumber || '',
-            avatar: c.caller?.avatarUrl || c.callerId?.avatarUrl,
-          },
-          receiver: {
-            id: c.receiver?._id || c.receiverId?._id || c.receiver || c.receiverId,
-            name: c.receiver?.name || c.receiverId?.name || 'User',
-            phone: c.receiver?.phoneNumber || c.receiverId?.phoneNumber || '',
-            avatar: c.receiver?.avatarUrl || c.receiverId?.avatarUrl,
-          },
-          type: c.callType || c.type || 'voice',
-          status: c.status || 'ended',
-          duration: c.duration || c.durationSeconds,
-          startTime: new Date(c.createdAt).getTime(),
-        }));
+        const seen = new Set<string>();
+        const mappedCalls: CallSession[] = [];
+        for (const c of res.data) {
+          const cid = (c._id || c.id)?.toString();
+          if (!cid || seen.has(cid)) continue;
+          seen.add(cid);
+          mappedCalls.push({
+            id: cid,
+            caller: {
+              id: c.caller?._id || c.callerId?._id || c.caller || c.callerId,
+              name: c.caller?.name || c.callerId?.name || 'User',
+              phone: c.caller?.phoneNumber || c.callerId?.phoneNumber || '',
+              avatar: c.caller?.avatarUrl || c.callerId?.avatarUrl,
+            },
+            receiver: {
+              id: c.receiver?._id || c.receiverId?._id || c.receiver || c.receiverId,
+              name: c.receiver?.name || c.receiverId?.name || 'User',
+              phone: c.receiver?.phoneNumber || c.receiverId?.phoneNumber || '',
+              avatar: c.receiver?.avatarUrl || c.receiverId?.avatarUrl,
+            },
+            type: c.callType || c.type || 'voice',
+            status: c.status || 'ended',
+            duration: c.duration || c.durationSeconds,
+            startTime: new Date(c.createdAt).getTime(),
+          });
+        }
         set({ calls: mappedCalls });
       }
     } catch (err) {

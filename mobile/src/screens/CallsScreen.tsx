@@ -43,7 +43,7 @@ export const CallsScreen: React.FC = () => {
     <View style={[styles.container, isDarkMode && styles.containerDark]}>
       <FlatList
         data={calls}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id || index}-${index}`}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primaryLight]} />}
         renderItem={({ item }) => {
           const target = item.caller.id === currentUser?.id ? item.receiver : item.caller;

@@ -169,7 +169,7 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({ visible, onClose, in
         ) : (
           <FlatList
             data={filtered}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => `${item.id || index}-${index}`}
             renderItem={({ item }) => {
               const isSelected = selectedUserIds.includes(item.id);
               return (

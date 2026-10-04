@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import * as Location from 'expo-location';
 import * as Contacts from 'expo-contacts';
@@ -78,6 +79,11 @@ export class MediaService {
   // 4. Voice Recording using real Audio.Recording
   static async startVoiceRecording(): Promise<boolean> {
     try {
+      if (!Audio?.requestPermissionsAsync || !Audio?.Recording?.createAsync) {
+        Alert.alert('Voice Note', 'Voice recording requires a standalone APK build (Expo Go SDK 57 does not support native audio recording).');
+        return false;
+      }
+
       const perm = await Audio.requestPermissionsAsync();
       if (!perm.granted) return false;
 

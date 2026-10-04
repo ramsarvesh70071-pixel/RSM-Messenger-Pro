@@ -55,7 +55,7 @@ export const StatusScreen: React.FC = () => {
     <View style={[styles.container, isDarkMode && styles.containerDark]}>
       <FlatList
         data={otherStories}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => `${item.id || index}-${index}`}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primaryLight]} />}
         ListHeaderComponent={
           <>

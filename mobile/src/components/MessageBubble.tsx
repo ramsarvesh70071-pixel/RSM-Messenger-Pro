@@ -57,6 +57,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           setIsPlayingAudio(true);
         }
       } else {
+        if (!Audio?.Sound?.createAsync) {
+          Alert.alert('Audio Playback', 'Voice note playback requires a standalone APK build on Expo SDK 57.');
+          return;
+        }
         setIsLoadingAudio(true);
         const { sound: newSound, status } = await Audio.Sound.createAsync(
           { uri: audioUrl },

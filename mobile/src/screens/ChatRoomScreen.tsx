@@ -299,7 +299,7 @@ export const ChatRoomScreen: React.FC = () => {
           <FlatList
             ref={flatListRef}
             data={currentMessages}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => `${item.id || index}-${index}`}
             contentContainerStyle={styles.messageList}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
