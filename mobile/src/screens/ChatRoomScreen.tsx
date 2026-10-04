@@ -11,6 +11,9 @@ import {
   Modal,
   Alert,
   Keyboard,
+  Dimensions,
+  UIManager,
+  LayoutAnimation,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -63,6 +66,7 @@ export const ChatRoomScreen: React.FC = () => {
   const [isRecordingVoice, setIsRecordingVoice] = useState(false);
   const [recordSeconds, setRecordSeconds] = useState(0);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const insets = useSafeAreaInsets();
 
   const flatListRef = useRef<FlatList>(null);
@@ -70,26 +74,59 @@ export const ChatRoomScreen: React.FC = () => {
   const recordingTimerRef = useRef<any>(null);
 
   useEffect(() => {
+    const onKeyboardShow = (e: any) => {
+      setIsKeyboardVisible(true);
+      const kh = e?.endCoordinates?.height || 0;
+      if (Platform.OS === 'android' && kh > 0) {
+        try {
+          if (UIManager.setLayoutAnimationEnabledExperimental) {
+            UIManager.setLayoutAnimationEnabledExperimental(true);
+          }
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        } catch (_) {}
+        setKeyboardHeight(kh);
+      }
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 60);
+    };
+
+    const onKeyboardHide = () => {
+      setIsKeyboardVisible(false);
+      if (Platform.OS === 'android') {
+        try {
+          if (UIManager.setLayoutAnimationEnabledExperimental) {
+            UIManager.setLayoutAnimationEnabledExperimental(true);
+          }
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        } catch (_) {}
+        setKeyboardHeight(0);
+      }
+    };
+
     const showSub = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      () => {
-        setIsKeyboardVisible(true);
-        setTimeout(() => {
-          flatListRef.current?.scrollToEnd({ animated: true });
-        }, 60);
-      }
+      onKeyboardShow
     );
     const hideSub = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => {
-        setIsKeyboardVisible(false);
-      }
+      onKeyboardHide
     );
     return () => {
       showSub.remove();
       hideSub.remove();
     };
   }, []);
+
+  const getAndroidKeyboardSpacer = () => {
+    if (Platform.OS !== 'android' || keyboardHeight <= 0) return 0;
+    const screenH = Dimensions.get('screen').height;
+    const windowH = Dimensions.get('window').height;
+    // If window height shrunk by more than 150px, Android adjustResize already handled it
+    const isWindowAlreadyResized = screenH - windowH > 150;
+    if (isWindowAlreadyResized) return 0;
+    return keyboardHeight;
+  };
 
   const convId = activeConversation?.id || '';
   const currentMessages = messages[convId] || [];
@@ -215,8 +252,7 @@ export const ChatRoomScreen: React.FC = () => {
     <View style={[styles.container, isDarkMode && styles.containerDark]}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         {/* Chat Room Header */}
         <View style={[styles.header, isDarkMode && styles.headerDark]}>
@@ -305,6 +341,7 @@ export const ChatRoomScreen: React.FC = () => {
             contentContainerStyle={styles.messageList}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
+            style={{ flex: 1 }}
             onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
             onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
             renderItem={({ item }) => (
@@ -413,6 +450,16 @@ export const ChatRoomScreen: React.FC = () => {
                 </TouchableOpacity>
               )}
             </View>
+          )}
+
+          {/* Android Keyboard Height Spacer */}
+          {getAndroidKeyboardSpacer() > 0 && (
+            <View
+              style={{
+                height: getAndroidKeyboardSpacer(),
+                backgroundColor: isDarkMode ? '#0B141A' : '#ECE5DD',
+              }}
+            />
           )}
         </View>
 
