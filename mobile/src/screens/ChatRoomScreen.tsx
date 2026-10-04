@@ -8,11 +8,11 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   Modal,
   Alert,
   Keyboard,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useStore } from '../store/useStore';
 import { MessageBubble } from '../components/MessageBubble';
@@ -63,6 +63,7 @@ export const ChatRoomScreen: React.FC = () => {
   const [isRecordingVoice, setIsRecordingVoice] = useState(false);
   const [recordSeconds, setRecordSeconds] = useState(0);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<any>(null);
@@ -214,10 +215,11 @@ export const ChatRoomScreen: React.FC = () => {
     <View style={[styles.container, isDarkMode && styles.containerDark]}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         {/* Chat Room Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, isDarkMode && styles.headerDark]}>
           <TouchableOpacity
             style={styles.backBtn}
             onPress={() => setActiveConversation(null)}
@@ -365,7 +367,7 @@ export const ChatRoomScreen: React.FC = () => {
               style={[
                 styles.inputContainer,
                 {
-                  paddingBottom: Platform.OS === 'android' ? (isKeyboardVisible ? 6 : 10) : 6,
+                  paddingBottom: isKeyboardVisible ? 6 : Math.max(insets.bottom, 10),
                 },
               ]}
             >
@@ -625,6 +627,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
+  },
+  headerDark: {
+    backgroundColor: '#111B21',
   },
   backBtn: {
     padding: 6,

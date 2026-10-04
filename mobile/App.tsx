@@ -161,11 +161,11 @@ function MainApp() {
   // Active Chat conversation -> Show Full Chat Room
   if (activeConversation) {
     return (
-      <View style={[styles.safeContainer, isDarkMode && styles.safeContainerDark]}>
+      <SafeAreaView style={[styles.safeContainer, isDarkMode && styles.safeContainerDark]} edges={['top']}>
         <StatusBar backgroundColor={headerBg} barStyle="light-content" translucent={false} />
         <ChatRoomScreen />
         <CallOverlay />
-      </View>
+      </SafeAreaView>
     );
   }
 

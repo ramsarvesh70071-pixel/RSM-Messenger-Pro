@@ -26,6 +26,7 @@
     "android": {
       "package": "com.rsmmessenger.app",
       "versionCode": 2,
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#05110E",
         "foregroundImage": "./assets/android-icon-foreground.png",
