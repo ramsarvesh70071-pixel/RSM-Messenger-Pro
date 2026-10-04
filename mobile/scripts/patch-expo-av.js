@@ -20,8 +20,12 @@ if (fs.existsSync(viewUtilsPath)) {
   let content = fs.readFileSync(viewUtilsPath, 'utf8');
   if (content.includes('resolveView')) {
     content = content.replace(
-      /try\s*\{\s*val videoWrapperView = moduleRegistry\.getModule\(UIManager::class\.java\)\.resolveView\(viewTag\)[^}]*\}\s*catch[^{]*\{[^}]*\}/gs,
-      'promise.reject("E_VIDEO_TAGINCORRECT", "VideoView lookup is not supported on New Architecture.")'
+      /private fun tryRunWithVideoViewOnUiThread\(moduleRegistry: ModuleRegistry, viewTag: Int, callback: VideoViewCallback, promise: Promise\) \{[\s\S]*?catch \(e: IllegalViewOperationException\) \{[\s\S]*?\}\s*\}/,
+      'private fun tryRunWithVideoViewOnUiThread(moduleRegistry: ModuleRegistry, viewTag: Int, callback: VideoViewCallback, promise: Promise) {\n    promise.reject("E_VIDEO_TAGINCORRECT", "VideoView is not supported on New Architecture.")\n  }'
+    );
+    content = content.replace(
+      /private fun tryRunWithVideoViewOnUiThread\(moduleRegistry: ModuleRegistry, viewTag: Int, callback: VideoViewCallback, promise: expo\.modules\.kotlin\.Promise\) \{[\s\S]*?catch \(e: IllegalViewOperationException\) \{[\s\S]*?\}\s*\}/,
+      'private fun tryRunWithVideoViewOnUiThread(moduleRegistry: ModuleRegistry, viewTag: Int, callback: VideoViewCallback, promise: expo.modules.kotlin.Promise) {\n    promise.reject("E_VIDEO_TAGINCORRECT", "VideoView is not supported on New Architecture.", null)\n  }'
     );
     fs.writeFileSync(viewUtilsPath, content, 'utf8');
     console.log('[patch-expo-av] Patched ViewUtils.kt');
