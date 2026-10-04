@@ -63,3 +63,28 @@ for (const notifPath of notifFiles) {
     }
   }
 }
+
+// 5. Patch expo-av ExponentAV & ExpoVideoManager (SDK 57 Expo Go missing native module)
+const avFiles = [
+  path.join(expoAvDir, 'build', 'ExponentAV.js'),
+  path.join(expoAvDir, 'src', 'ExponentAV.ts'),
+  path.join(expoAvDir, 'build', 'ExpoVideoManager.js'),
+  path.join(expoAvDir, 'src', 'ExpoVideoManager.ts'),
+];
+for (const avPath of avFiles) {
+  if (fs.existsSync(avPath)) {
+    let content = fs.readFileSync(avPath, 'utf8');
+    if (content.includes("requireNativeModule('ExponentAV')")) {
+      content = content.replace("import { requireNativeModule }", "import { requireOptionalNativeModule }");
+      content = content.replace("requireNativeModule('ExponentAV')", "requireOptionalNativeModule('ExponentAV') || {}");
+      fs.writeFileSync(avPath, content, 'utf8');
+      console.log(`[patch-expo-av] Patched ExponentAV in ${path.basename(avPath)}`);
+    }
+    if (content.includes("requireNativeModule('ExpoVideoView')")) {
+      content = content.replace("import { requireNativeModule }", "import { requireOptionalNativeModule }");
+      content = content.replace("requireNativeModule('ExpoVideoView')", "requireOptionalNativeModule('ExpoVideoView') || {}");
+      fs.writeFileSync(avPath, content, 'utf8');
+      console.log(`[patch-expo-av] Patched ExpoVideoView in ${path.basename(avPath)}`);
+    }
+  }
+}
